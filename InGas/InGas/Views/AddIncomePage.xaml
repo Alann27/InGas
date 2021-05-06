@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="InGas.Views.AddIncomePage">
+    <ContentPage.Content>
+        <ScrollView>
+            <StackLayout Spacing="10" Padding="15">
+                <Entry Text="{Binding Concept}" Placeholder="Concept" Keyboard="Text"/>
+                <Entry Text="{Binding Value}" Placeholder="Value" Keyboard="Numeric"/>
+                <DatePicker Date="{Binding Date}" Format="dd MMMM yyyy"/>
+
+                <StackLayout Orientation="Horizontal">
+                    
+                    <Label Text="Income type:" VerticalOptions="Center"/>
+                    <Picker ItemsSource="{Binding Types}" Margin="15,0,0,0" HorizontalTextAlignment="Center"/>
+
+                </StackLayout>
+                
+                <Button Text="Add income" HorizontalOptions="Center"/>
+            </StackLayout>
+        </ScrollView>
+    </ContentPage.Content>
+</ContentPage>
