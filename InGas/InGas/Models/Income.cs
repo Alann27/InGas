@@ -6,12 +6,13 @@ using System.Text;
 
 namespace InGas.Models
 {
+    [Table("Income")]
     public class Income
     {
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
         [ForeignKey(typeof(IncomeType))]
-        public int IdType { get; set; }
+        public int TypeId { get; set; }
         [NotNull, MaxLength(100)]
         public string Concept { get; set; }
         [NotNull]
@@ -20,7 +21,6 @@ namespace InGas.Models
         public DateTime Date { get; set; }
 
         [ManyToOne]
-        public IncomeType Type { get; set; }
-
+        public IncomeType IncomeType { get; set; }
     }
 }

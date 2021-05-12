@@ -10,9 +10,9 @@ using Xamarin.Forms.Xaml;
 namespace InGas.Views
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class AddIncomeTypePage : ContentPage
+    public partial class ExpensesPage : ContentPage
     {
-        public AddIncomeTypePage()
+        public ExpensesPage()
         {
             InitializeComponent();
         }

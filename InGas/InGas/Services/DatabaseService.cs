@@ -7,6 +7,8 @@ using InGas.Models;
 using SQLite;
 using Xamarin.Essentials;
 using System.Linq;
+using SQLiteNetExtensions.Extensions;
+using SQLiteNetExtensionsAsync.Extensions;
 
 namespace InGas.Services
 {
@@ -17,20 +19,21 @@ namespace InGas.Services
         private bool _initialized = false;
         public DatabaseService()
         {
-
+            Initialize();
+            
         }
 
-        public async Task Initialize()
+        public async void Initialize()
         {
             if (!_initialized)
             {
-                string dbPath = Path.Combine(FileSystem.AppDataDirectory, /*"InGasDB"*/"testDB");
+                string dbPath = Path.Combine(FileSystem.AppDataDirectory, /*"InGasDB"*/"testsDB");
                 _connection = new SQLiteAsyncConnection(dbPath);
 
-                await _connection.CreateTableAsync<Income>();
-                await _connection.CreateTableAsync<Expense>();
                 await _connection.CreateTableAsync<IncomeType>();
                 await _connection.CreateTableAsync<ExpenseType>();
+                await _connection.CreateTableAsync<Income>();
+                await _connection.CreateTableAsync<Expense>();
 
                 IncomeType defaultIncomeType = new IncomeType { Name = "Others" };
                 ExpenseType defaultExpenseType = new ExpenseType { Name = "Others" };
@@ -51,7 +54,7 @@ namespace InGas.Services
 
         public async Task<List<Income>> GetIncomesOnDate(DateTime date)
         {
-            await Initialize();
+            //Initialize();
 
             return await _connection.QueryAsync<Income>(
                 "SELECT * FROM Income AS I" +
@@ -59,13 +62,13 @@ namespace InGas.Services
                 "WHERE Convert(DATE,I.Date) = ?", date.Date);
         }
 
-        public async Task<Income> InsertIncome(int idType, string concept, double value, DateTime date)
+        public async Task<Income> InsertIncome(int typeId, string concept, double value, DateTime date)
         {
-            if (idType > 0 && !string.IsNullOrEmpty(concept) && value != 0 && date != null )
+            if (typeId > 0 && !string.IsNullOrEmpty(concept) && value != 0 && date != null )
             {
                 Income newIncome = new Income
                 {
-                    IdType = idType,
+                    TypeId = typeId,
                     Concept = concept,
                     Value = value,
                     Date = date
@@ -84,8 +87,8 @@ namespace InGas.Services
             }
             else
             {
-                if (idType <= 0)
-                    throw new ArgumentException("You have not select a Type for the income", "idType");
+                if (typeId <= 0)
+                    throw new ArgumentException("You have not select a Type for the income", "typeId");
 
                 if (string.IsNullOrEmpty(concept))
                     throw new ArgumentException("The concept cannot be empty", "concept");
@@ -100,13 +103,13 @@ namespace InGas.Services
             }
         }
 
-        public async Task<Expense> InsertExpense(int idType, string concept, double value, DateTime date)
+        public async Task<Expense> InsertExpense(int typeId, string concept, double value, DateTime date)
         {
-            if (idType > 0 && !string.IsNullOrEmpty(concept) && value != 0 && date != null)
+            if (typeId > 0 && !string.IsNullOrEmpty(concept) && value != 0 && date != null)
             {
                 Expense newExpense = new Expense
                 {
-                    IdType = idType,
+                    TypeId = typeId,
                     Concept = concept,
                     Value = value,
                     Date = date
@@ -114,7 +117,7 @@ namespace InGas.Services
 
                 int result = await _connection.InsertAsync(newExpense);
 
-                if (result < 1)
+                if (result != 1)
                 {
                     throw new Exception("Insert failed");
                 }
@@ -125,8 +128,8 @@ namespace InGas.Services
             }
             else
             {
-                if (idType <= 0)
-                    throw new ArgumentException("You have not select a Type for the income", "idType");
+                if (typeId <= 0)
+                    throw new ArgumentException("You have not select a Type for the income", "typeId");
 
                 if (string.IsNullOrEmpty(concept))
                     throw new ArgumentException("The concept cannot be empty", "concept");
@@ -148,7 +151,7 @@ namespace InGas.Services
                 IncomeType newIncomeType = new IncomeType { Name = name };
                 int result = await _connection.InsertAsync(newIncomeType);
 
-                if (result < 1)
+                if (result != 1)
                 {
                     throw new Exception();
                 }
@@ -170,7 +173,7 @@ namespace InGas.Services
                 ExpenseType newExpenseType = new ExpenseType{ Name = name };
                 int result = await _connection.InsertAsync(newExpenseType);
 
-                if (result < 1)
+                if (result != 1)
                 {
                     throw new Exception();
                 }
@@ -189,7 +192,7 @@ namespace InGas.Services
         {
             if (id > 0)
             {
-                return await _connection.Table<Income>().FirstOrDefaultAsync(income => income.Id == id);
+               return await _connection.GetWithChildrenAsync<Income>(id);
             }
             else
             {
@@ -201,7 +204,7 @@ namespace InGas.Services
         {
             if (id > 0)
             {
-                return await _connection.Table<Expense>().FirstOrDefaultAsync(expense => expense.Id == id);
+                return await _connection.GetWithChildrenAsync<Expense>(id);
             }
             else
             {
@@ -213,7 +216,7 @@ namespace InGas.Services
         {
             if (id > 0)
             {
-                return await _connection.Table<IncomeType>().FirstOrDefaultAsync(incomeType => incomeType.Id == id);
+                return await _connection.GetAsync<IncomeType>(id);
             }
             else
             {
@@ -225,7 +228,7 @@ namespace InGas.Services
         {
             if (id > 0)
             {
-                return await _connection.Table<ExpenseType>().FirstOrDefaultAsync(expenseType => expenseType.Id == id);
+                return await _connection.GetAsync<ExpenseType>(id);
             }
             else
             {
@@ -235,12 +238,12 @@ namespace InGas.Services
 
         public async Task<List<Income>> GetAllIncomes()
         {
-            return await _connection.Table<Income>().ToListAsync();
+            return await _connection.GetAllWithChildrenAsync<Income>();
         }
 
         public async Task<List<Expense>> GetAllExpenses()
         {
-            return await _connection.Table<Expense>().ToListAsync();
+            return await _connection.GetAllWithChildrenAsync<Expense>();
         }
 
         public async Task<List<IncomeType>> GetAllIncomeTypes()
@@ -253,14 +256,14 @@ namespace InGas.Services
             return await _connection.Table<ExpenseType>().ToListAsync();
         }
 
-        public async Task<Income> UpdateIncomeById(Income oldIncome, int idType, string concept, double value, DateTime date)
+        public async Task<Income> UpdateIncomeById(Income oldIncome, int typeId, string concept, double value, DateTime date)
         {
-            if (oldIncome != null && idType > 0 && !string.IsNullOrEmpty(concept) && value != 0 && date != null)
+            if (oldIncome != null && typeId > 0 && !string.IsNullOrEmpty(concept) && value != 0 && date != null)
             {
                 Income newIncome = new Income
                 {
                     Id = oldIncome.Id,
-                    IdType = idType,
+                    TypeId = typeId,
                     Concept = concept,
                     Value = value,
                     Date = date
@@ -270,7 +273,7 @@ namespace InGas.Services
 
                 if (result != 1)
                 {
-                    throw new Exception("Insert failed");
+                    throw new Exception("Update failed");
                 }
                 else
                 {
@@ -282,8 +285,8 @@ namespace InGas.Services
                 if (oldIncome == null)
                     throw new ArgumentException("The income cannot be null", "oldIncome");
 
-                if (idType <= 0)
-                    throw new ArgumentException("You have not select a Type for the income", "idType");
+                if (typeId <= 0)
+                    throw new ArgumentException("You have not select a Type for the income", "typeId");
 
                 if (string.IsNullOrEmpty(concept))
                     throw new ArgumentException("The concept cannot be empty", "concept");
@@ -298,14 +301,14 @@ namespace InGas.Services
             }
         }
 
-        public async Task<Expense> UpdateExpenseById(Expense oldExpense, int idType, string concept, double value, DateTime date)
+        public async Task<Expense> UpdateExpenseById(Expense oldExpense, int typeId, string concept, double value, DateTime date)
         {
-            if (oldExpense != null && idType > 0 && !string.IsNullOrEmpty(concept) && value != 0 && date != null)
+            if (oldExpense != null && typeId > 0 && !string.IsNullOrEmpty(concept) && value != 0 && date != null)
             {
                 Expense newExpense = new Expense
                 {
                     Id = oldExpense.Id,
-                    IdType = idType,
+                    TypeId = typeId,
                     Concept = concept,
                     Value = value,
                     Date = date
@@ -315,7 +318,7 @@ namespace InGas.Services
 
                 if (result != 1)
                 {
-                    throw new Exception("Insert failed");
+                    throw new Exception("Update failed");
                 }
                 else
                 {
@@ -327,8 +330,8 @@ namespace InGas.Services
                 if (oldExpense == null)
                     throw new ArgumentException("The expense cannot be null", "oldIncome");
 
-                if (idType <= 0)
-                    throw new ArgumentException("You have not select a Type for the income", "idType");
+                if (typeId <= 0)
+                    throw new ArgumentException("You have not select a Type for the income", "typeId");
 
                 if (string.IsNullOrEmpty(concept))
                     throw new ArgumentException("The concept cannot be empty", "concept");
@@ -345,16 +348,12 @@ namespace InGas.Services
 
         public async Task<List<Income>> GetIncomesBetweenDates(DateTime startDate, DateTime finalDate)
         {
-            var incomes = await _connection.Table<Income>().ToListAsync();
-
-            return new List<Income>(incomes.Where(income => income.Date >= startDate && income.Date <= finalDate));
+            return await _connection.GetAllWithChildrenAsync<Income>(income => income.Date >= startDate && income.Date <= finalDate);
         }
 
         public async Task<List<Expense>> GetExpensesBetweenDates(DateTime startDate, DateTime finalDate)
         {
-            var expenses = await _connection.Table<Expense>().ToListAsync();
-
-            return new List<Expense>(expenses.Where(expense => expense.Date >= startDate && expense.Date <= finalDate));
+            return await _connection.GetAllWithChildrenAsync<Expense>(expense => expense.Date >= startDate && expense.Date <= finalDate);
         }
     }
 }

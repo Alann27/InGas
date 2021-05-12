@@ -10,8 +10,8 @@ namespace InGas.ViewModels
     {
         protected IDatabaseService DatabaseService { get; }
         protected INavigationService NavigationService { get; }
-        protected IPageDialogService DialogService { get; }
-        protected BaseViewModel(INavigationService navigationService, IPageDialogService dialogService, IDatabaseService databaseService)
+        protected IDialogService DialogService { get; }
+        protected BaseViewModel(INavigationService navigationService, IDialogService dialogService, IDatabaseService databaseService)
         {
             NavigationService = navigationService;
             DialogService = dialogService;

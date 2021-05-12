@@ -12,11 +12,12 @@
                 <StackLayout Orientation="Horizontal">
                     
                     <Label Text="Income type:" VerticalOptions="Center"/>
-                    <Picker ItemsSource="{Binding Types}" Margin="15,0,0,0" HorizontalTextAlignment="Center"/>
+                    <Picker ItemsSource="{Binding Types}" Margin="15,0,0,0" Title="Type" HorizontalTextAlignment="Center" SelectedItem="{Binding IncomeTypeSelected}"/>
 
                 </StackLayout>
-                
-                <Button Text="Add income" HorizontalOptions="Center"/>
+
+                <Button Text="Add income" HorizontalOptions="Center" Command="{Binding AddIncomeCommand}"/>
+                <Button Text="Clear" HorizontalOptions="Center" Command="{Binding ClearCommand}"/>
             </StackLayout>
         </ScrollView>
     </ContentPage.Content>

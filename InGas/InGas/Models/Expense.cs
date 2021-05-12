@@ -6,13 +6,14 @@ using System.Text;
 
 namespace InGas.Models
 {
+    [Table("Expense")]
     public class Expense
     {
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
         [ForeignKey(typeof(ExpenseType))]
-        public int IdType { get; set; }
+        public int TypeId { get; set; }
         
         [NotNull, MaxLength(100)]
         public string Concept { get; set; }
