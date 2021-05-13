@@ -18,6 +18,9 @@ namespace InGas.Services
         Task<IncomeType> GetIncomeTypeById(int id);
         Task<ExpenseType> GetExpenseTypeById(int id);
 
+        Task<IncomeType> GetIncomeTypeByName(string name);
+        Task<ExpenseType> GetExpenseTypeByName(string name);
+
         Task<List<Income>> GetAllIncomes();
         Task<List<Expense>> GetAllExpenses();
         Task<List<IncomeType>> GetAllIncomeTypes();

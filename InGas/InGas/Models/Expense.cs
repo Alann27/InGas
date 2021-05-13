@@ -23,6 +23,6 @@ namespace InGas.Models
         public DateTime Date { get; set; }
 
         [ManyToOne]
-        public ExpenseType Type { get; set; }
+        public ExpenseType ExpenseType { get; set; }
     }
 }

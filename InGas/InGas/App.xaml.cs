@@ -34,6 +34,9 @@ namespace InGas
             containerRegistry.RegisterForNavigation<AddIncomePage, AddIncomeViewModel>(NavigationConstants.AddIncomePage);
             containerRegistry.RegisterForNavigation<IncomesPage, IncomesViewModel>(NavigationConstants.IncomesPage);
 
+            containerRegistry.RegisterForNavigation<ExpensesPage, ExpensesViewModel>(NavigationConstants.ExpensesPage);
+            containerRegistry.RegisterForNavigation<AddExpensePage, AddExpenseViewModel>(NavigationConstants.AddExpensePage);
+
             containerRegistry.RegisterInstance<IDatabaseService>(new DatabaseService());
             containerRegistry.RegisterSingleton<IDialogService, DialogService>();
         }

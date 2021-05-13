@@ -13,6 +13,7 @@ namespace InGas
         public const string DetailPage = "Detail";
         public const string AddIncomePage = "AddIncome";
         public const string IncomesPage = "Incomes";
+        public const string ExpensesPage = "Expenses";
         public const string AddExpensePage = "AddExpense";
         public const string PreferencesPage = "Preferences";
 
@@ -31,7 +32,7 @@ namespace InGas
             new Page
             {
                 Name = "Expenses",
-                NavigationUri = AddExpensePage
+                NavigationUri = ExpensesPage
             },
             new Page
             {

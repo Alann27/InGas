@@ -224,6 +224,31 @@ namespace InGas.Services
             }
         }
 
+        public async Task<IncomeType> GetIncomeTypeByName(string name)
+        {
+            if (!string.IsNullOrEmpty(name))
+            {
+
+                return await _connection.Table<IncomeType>().FirstOrDefaultAsync(incomeType => incomeType.Name == name);
+            }
+            else
+            {
+                throw new ArgumentException("The name cannot be null", "name");
+            }
+        }
+        public async Task<ExpenseType> GetExpenseTypeByName(string name)
+        {
+            if (!string.IsNullOrEmpty(name))
+            {
+
+                return await _connection.Table<ExpenseType>().FirstOrDefaultAsync(incomeType => incomeType.Name == name);
+            }
+            else
+            {
+                throw new ArgumentException("The name cannot be null", "name");
+            }
+        }
+
         public async Task<ExpenseType> GetExpenseTypeById(int id)
         {
             if (id > 0)

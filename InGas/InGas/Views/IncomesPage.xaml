@@ -8,9 +8,32 @@
     </ContentPage.ToolbarItems>
     
     <ContentPage.Content>
-        <Grid ColumnDefinitions="*,*">
+        <Grid RowDefinitions="*,*">
 
             <Label Text="Haiii" VerticalOptions="Center" HorizontalOptions="Center"/>
+
+            <ListView ItemsSource="{Binding Incomes}" Grid.Row="1" HasUnevenRows="True">
+                <ListView.Header>
+                    <Grid ColumnDefinitions="*,3*,*,*">
+                        <Label Text="Type" Grid.Column="0" VerticalOptions="Center" HorizontalOptions="Center"/>
+                        <Label Text="Concept" Grid.Column="1"  VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"/>
+                        <Label Text="Value" Grid.Column="2" VerticalOptions="Center" HorizontalOptions="Center"/>
+                        <Label Text="Date" Grid.Column="3" VerticalOptions="Center" HorizontalOptions="Center"/>
+                    </Grid>
+                </ListView.Header>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <Grid ColumnDefinitions="*,3*,*,*">
+                                <Label Text="{Binding IncomeType.Name}" Grid.Column="0"  VerticalOptions="Center" HorizontalOptions="Center"/>
+                                <Label Text="{Binding Concept}" Grid.Column="1" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"/>
+                                <Label Text="{Binding Value, StringFormat='${0:0.00}'}" Grid.Column="2" VerticalOptions="Center" HorizontalOptions="Center"/>
+                                <Label Text="{Binding Date, StringFormat='{0:dd MMMM yy}'}" Grid.Column="3" VerticalOptions="Center" HorizontalOptions="Center"/>
+                            </Grid>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
 
         </Grid>
     </ContentPage.Content>

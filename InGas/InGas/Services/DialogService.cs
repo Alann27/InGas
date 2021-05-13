@@ -28,7 +28,7 @@ namespace InGas.Services
         {
             var result = await UserDialogs.Instance.PromptAsync(message, title, okButton, cancelButton, placeholder, InputType.Name);
 
-            return result.Value;
+            return result.Value.Trim();
         }
     }
 }

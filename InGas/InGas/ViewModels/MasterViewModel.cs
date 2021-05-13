@@ -1,4 +1,5 @@
 ﻿using InGas.Services;
+using Prism.Commands;
 using Prism.Navigation;
 using Prism.Services;
 using System;
@@ -13,13 +14,13 @@ namespace InGas.ViewModels
     {
         public MasterViewModel(INavigationService navigationService, DialogService dialogService, IDatabaseService databaseService) : base(navigationService, dialogService, databaseService)
         {
-            SelectedPageCommand = new Xamarin.Forms.Command<Page>(OnSelectedPage);
+            SelectedPageCommand = new DelegateCommand<Page>(OnSelectedPage);
         }
 
         public List<Page> Pages { get; } = NavigationConstants.Pages;
         private Page _selectedPage = NavigationConstants.Pages.FirstOrDefault();
 
-        public ICommand SelectedPageCommand { get; set; }
+        public DelegateCommand<Page> SelectedPageCommand { get; set; }
 
         public async void OnSelectedPage(Page page)
         {

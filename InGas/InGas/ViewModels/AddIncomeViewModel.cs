@@ -1,14 +1,12 @@
 ﻿using InGas.Models;
 using InGas.Services;
+using Prism.Commands;
 using Prism.Navigation;
-using Prism.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Input;
 
 namespace InGas.ViewModels
 {
@@ -16,10 +14,10 @@ namespace InGas.ViewModels
     {
         public AddIncomeViewModel(INavigationService navigationService, IDialogService dialogService, IDatabaseService databaseService) : base(navigationService, dialogService, databaseService)
         {
-            GetIncomesTypes();
+            AddIncomeCommand = new DelegateCommand(OnInsertIncome);
+            ClearCommand = new DelegateCommand(OnClear);
 
-            AddIncomeCommand = new Xamarin.Forms.Command(OnInsertIncome);
-            ClearCommand = new Xamarin.Forms.Command(OnClear);
+            GetIncomesTypes();
         }
 
         public string Concept { get; set; }
@@ -29,8 +27,8 @@ namespace InGas.ViewModels
         public List<IncomeType> Types { get; set; }
         public IncomeType IncomeTypeSelected { get; set; }
 
-        public ICommand AddIncomeCommand { get; set; }
-        public ICommand ClearCommand { get; set; }
+        public DelegateCommand AddIncomeCommand { get; set; }
+        public DelegateCommand ClearCommand { get; set; }
 
         private ObservableCollection<Income> _incomes = new ObservableCollection<Income>();
 
@@ -58,6 +56,7 @@ namespace InGas.ViewModels
                 double value = Math.Round(Convert.ToDouble(Value),2);
 
                 Income newIncome = await DatabaseService.InsertIncome(IncomeTypeSelected.TypeId, Concept, value, Date);
+                newIncome.IncomeType = IncomeTypeSelected;
 
                 _incomes.Add(newIncome);
 
